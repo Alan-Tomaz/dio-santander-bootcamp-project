@@ -53,3 +53,22 @@ export const getInsight = async (prompt: string) => {
   const json = response.candidates[0].content.parts[0].text
   return JSON.parse(json) as InsightData
 }
+
+export const askEducatorQuestion = async (
+  question: string,
+  simulationId: string,
+): Promise<string> => {
+  const prompt = `Você é um educador financeiro especializado em finanças pessoais e muito didático. 
+    Responda a seguinte pergunta sobre finanças pessoais de forma clara, objetiva e encorajadora. 
+    Use linguagem simples, como se estivesse falando com alguém sem conhecimento técnico em finanças.
+    Mantenha a resposta concisa (máximo 3-4 parágrafos).
+    
+    Pergunta do usuário: "${question}"
+    
+    Responda apenas com a resposta, sem formatações especiais.`
+
+  const response = await callGeminiAPI(prompt)
+  const answer = response.candidates[0].content.parts[0].text
+
+  return answer.trim()
+}

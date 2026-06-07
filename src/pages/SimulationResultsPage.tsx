@@ -8,15 +8,25 @@ import {
 } from 'lucide-react'
 import { useParams } from 'react-router-dom'
 
+import { ChatInterface } from '@/components/features/Chat/ChatInterface'
 import { AIInsightsCard } from '@/components/features/SimulationResults/AIInsightCardProps'
 import { Card } from '@/components/features/SimulationResults/Card'
 import { PageHero } from '@/components/shared/PageHero'
+import { useChatConversation } from '@/hooks/useChatConversation'
 import { useSimulationStorage } from '@/hooks/useSimulationStorage'
 import { calcMonthlySavings } from '@/utils/simulation'
 
 export function SimulationResultsPage() {
   const { id } = useParams<{ id: string }>()
   const { getFormData } = useSimulationStorage()
+  const { messages, isLoading, error, addMessage } = id
+    ? useChatConversation(id)
+    : {
+        messages: [],
+        isLoading: false,
+        error: null,
+        addMessage: async () => {},
+      }
 
   const data = id ? getFormData(id) : null
 
@@ -73,6 +83,18 @@ export function SimulationResultsPage() {
             label="Dívidas / Parcelas"
             value={data.debts}
             subtitle={'Valor comprometido em parcelas/depósito'}
+          />
+        </div>
+      </div>
+
+      {/* Chat Interface */}
+      <div className="mt-6 grid gap-6 lg:grid-cols-1">
+        <div className="h-96">
+          <ChatInterface
+            messages={messages}
+            isLoading={isLoading}
+            error={error}
+            onSendMessage={addMessage}
           />
         </div>
       </div>
